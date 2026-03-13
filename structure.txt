@@ -1,0 +1,17 @@
+k8s-observability-platform
+│
+├── terraform
+│
+├── kubernetes
+│   ├── workloads
+│   ├── ingress
+│
+├── helm
+│
+├── monitoring
+│
+├── logging
+│
+├── scripts
+│
+└── docs
