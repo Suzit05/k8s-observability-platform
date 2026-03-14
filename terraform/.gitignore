@@ -1,0 +1,29 @@
+# Local .terraform directories (contains binaries/plugins)
+**/.terraform/*
+
+# .tfstate files (Contains sensitive data and infrastructure secrets)
+*.tfstate
+*.tfstate.*
+
+# Crash log files
+crash.log
+crash.*.log
+
+# Exclude any .tfvars files (often contain sensitive variable values)
+# Best practice: Use *.auto.tfvars for non-sensitive defaults 
+# and gitignore the rest.
+*.tfvars
+*.tfvars.json
+
+# Ignore override files as they are usually personal/local-only
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Include plugin cache directory
+.terraform.lock.hcl
+
+# Ignore CLI configuration files
+.terraformrc
+terraform.rc
