@@ -1,0 +1,37 @@
+1.after creating the instance , wait for 2-3 min. then ssh into the master
+
+2. nano master-setup.sh --------copy the code from master-setup.sh
+
+3. sudo chmod +x master-setup.sh
+
+4. ./master-setup.sh
+
+5.after running the master-setup.sh , the output bottom should look like this:
+Join command saved in join-command.sh
+kubeadm join 172.31.3.69:6443 --token 91rtjl.jbptgtbe1fbin9oo --discovery-token-ca-cert-hash sha256:8e1c40f308ced259ae124269049bfc75308ca24d6f222c6fedaa7dd089350b5a
+Master setup completed!
+.
+.
+.
+
+
+6. paste this command into workers node (ip- after ssh)---------
+
+sudo kubeadm join 172.31.3.69:6443 \
+--token 91rtjl.jbptgtbe1fbin9oo \
+--discovery-token-ca-cert-hash sha256:8e1c40f308ced259ae124269049bfc75308ca24d6f222c6fedaa7dd089350b5a
+
+7.kubectl get nodes --------------in master node to verify
+
+8. kubectl get pods -n kube-system ---check system pods (master node)
+
+9. kubectl get nodes -o wide
+
+You created a Kubernetes cluster using kubeadm.
+.
+.
+        Master Node
+        (Control Plane)
+             │
+      ┌──────┴──────┐
+   Worker 1      Worker 2
