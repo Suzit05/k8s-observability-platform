@@ -101,10 +101,6 @@ resource "aws_instance" "worker_node" {   #worker node - the muscles - where the
   }
 }
 
-#ssh -i ~/.ssh/id_rsa ubuntu@51.20.141.66
+#ssh -i ~/.ssh/id_rsa ubuntu@13.61.32.218
 
-#control_node_ip = "16.16.121.201"
-#worker_node_ip = [
-#  "51.20.141.66",
- # "13.48.70.197",
-
+  

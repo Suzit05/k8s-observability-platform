@@ -1,0 +1,46 @@
+Step 1 — Start Your Terminal
+
+Open VS Code terminal or any shell.
+
+Go to your project folder.
+
+Step 2 — Verify Cluster Is Running
+
+Run:
+
+kubectl get nodes
+
+If you see your nodes like:
+
+observability-cluster-control-plane
+observability-cluster-worker
+observability-cluster-worker2
+
+your cluster is still running.
+
+Step 3 — Check Monitoring Pods
+kubectl get pods -n monitoring
+
+You should see pods like:
+
+monitoring-grafana
+prometheus-monitoring-kube-prometheus
+alertmanager-monitoring-kube-prometheus
+Step 4 — Start Port Forward Again
+
+Run:
+
+kubectl port-forward svc/monitoring-grafana 3000:80 -n monitoring
+
+Keep this terminal open.
+
+Step 5 — Open Grafana
+
+Open browser:
+
+http://localhost:3000
+
+Login with:
+
+username: admin
+password: (same password as before) - # SYSHxr2vLmZVnZl2nlmqAejF8Qw9HykINrDShYpi

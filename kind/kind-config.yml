@@ -1,0 +1,15 @@
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+name: observability-cluster
+
+nodes:
+- role: control-plane
+  # This section opens the "doors" from Docker to your Laptop
+  extraPortMappings:
+  - containerPort: 32000
+    hostPort: 32000
+  - containerPort: 32090
+    hostPort: 32090
+- role: worker
+- role: worker
+

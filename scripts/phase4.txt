@@ -1,0 +1,222 @@
+----------------manul step for monitoring stack in cluster in ec2------------------------
+
+# Phase 4 — Monitoring Stack (Manual)
+
+## Step 1 — Check Cluster Is Healthy
+
+Run on **master node**:
+
+```bash
+kubectl get nodes
+```
+
+Expected:
+
+```
+master-node   Ready
+worker-node1  Ready
+worker-node2  Ready
+```
+
+---
+
+# Step 2 — Install Helm
+
+Run:
+
+```bash
+curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+```
+
+Verify:
+
+```bash
+helm version
+```
+
+---
+
+# Step 3 — Add Prometheus Helm Repository
+
+```bash
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+```
+
+Update repo:
+
+```bash
+helm repo update
+```
+
+---
+
+# Step 4 — Create Monitoring Namespace
+
+```bash
+kubectl create namespace monitoring
+```
+
+Verify:
+
+```bash
+kubectl get ns
+```
+
+You should see:
+
+```
+monitoring
+```
+
+---
+
+# Step 5 — Install Monitoring Stack
+
+Run:
+
+```bash
+helm install monitoring prometheus-community/kube-prometheus-stack -n monitoring
+```
+
+This installs:
+
+* Prometheus
+* Grafana
+* Alertmanager
+* Node Exporter
+* Kube State Metrics
+
+---
+
+# Step 6 — Watch Pods Start
+
+Run:
+
+```bash
+kubectl get pods -n monitoring -w
+```
+
+Wait until everything becomes **Running**.
+
+Expected pods:
+
+```
+monitoring-grafana
+monitoring-kube-prometheus-operator
+monitoring-kube-state-metrics
+monitoring-prometheus-node-exporter
+prometheus-monitoring-kube-prometheus
+alertmanager-monitoring-kube-prometheus
+```
+
+Press **Ctrl + C** once all are running.
+
+---
+
+# Step 7 — Get Grafana Password
+
+Run:
+
+```bash
+kubectl get secret monitoring-grafana -n monitoring -o jsonpath="{.data.admin-password}" | base64 --decode
+```
+
+Copy the password.
+
+Username will be:
+
+```
+admin
+```
+
+---
+
+# Step 8 — Access Grafana (Port Forward)
+
+Run:
+
+```bash
+kubectl port-forward svc/monitoring-grafana 3000:80 -n monitoring
+```
+
+Open browser:
+
+```
+http://localhost:3000
+```
+# Important Tip (For EC2)
+
+If `localhost:3000` does not open on your laptop, you must **SSH tunnel** from your local machine:
+
+```
+ssh -i key.pem -L 3000:localhost:3000 ubuntu@<EC2-PUBLIC-IP>
+
+Login:
+
+```
+username: admin
+password: (password you copied)
+```
+
+---
+
+# Step 9 — Verify Dashboards
+
+Inside Grafana:
+
+```
+Dashboards → Browse
+```
+
+Open:
+
+```
+Kubernetes / Compute Resources / Node
+```
+
+You should see CPU and memory metrics coming from Prometheus.
+
+---
+
+# Your Observability Architecture Now
+
+```
+Kubernetes Cluster
+        │
+        │
+   Prometheus  (metrics)
+        │
+        │
+     Grafana  (dashboards)
+```
+
+This is a **real production monitoring stack**.
+
+---
+
+
+```
+
+Then run port-forward on the server.
+
+---
+
+# Next Phase (After This Works)
+
+Phase 5 will add **logging** using:
+
+* **Grafana Loki**
+* **Promtail**
+
+Then your platform becomes a **complete observability stack**:
+
+```
+Metrics → Prometheus
+Logs → Loki
+Dashboards → Grafana
+```
+
+---
+
+✅ First run **Step 6** and tell me if all pods become **Running**.
+Once confirmed, we’ll access Grafana properly.

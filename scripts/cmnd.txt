@@ -7,7 +7,8 @@
 4. ./master-setup.sh
 
 5.after running the master-setup.sh , the output bottom should look like this:
-kubeadm join <ip-address> --token <random> --discovery-token-ca-cert-hash sha256:<random>
+Join command saved in join-command.sh
+kubeadm join 172.31.10.30:6443 --token jd6o92.02xfdh1agtnotkui --discovery-token-ca-cert-hash sha256:951d8c2dc929eebe389f67b70fbb024d86f41057dd8491309f7a2e22a08fbf22
 Master setup completed!
 .
 .
@@ -16,9 +17,9 @@ Master setup completed!
 
 6. paste this command into workers node (ip- after ssh)---------
 
-sudo kubeadm join <ip-address> \
---token <random> \
---discovery-token-ca-cert-hash ssha256:<random>
+sudo kubeadm join 172.31.10.30:6443 \
+--token jd6o92.02xfdh1agtnotkui \
+--discovery-token-ca-cert-hash sha256:951d8c2dc929eebe389f67b70fbb024d86f41057dd8491309f7a2e22a08fbf22
 
 7.kubectl get nodes --------------in master node to verify
 
@@ -33,16 +34,24 @@ You created a Kubernetes cluster using kubeadm.
       ┌──────┴──────┐
    Worker 1      Worker 2
 ---------------------------------------------------------------------------
+---------------manual scripting------------------------------
+8 . git clone https://github.com/Suzit05/k8s-observability-platform.git
+cd k8s-observability-platform
 
-8. nano install-monitoring.sh
+9. chmod +x scripts/install-monitoring.sh
+./scripts/install-monitoring.sh
 
-9. paste from the install-monitoring.sh
-
-10.sudo chmod +x install-monitoring.sh
- ./install-monitoring.sh
-
+10. kubectl port-forward svc/monitoring-grafana 3000:80 -n monitoring
+-----------------------------------------------------------------------------
 
 
+
+
+
+
+----------for grafana -----------
+ ssh -L 3000:localhost:3000 ubuntu@<control plane ip >
+ then go to localhost:/3000
 
    #phase 4 
    AWS EC2
