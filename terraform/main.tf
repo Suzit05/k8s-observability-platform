@@ -38,6 +38,18 @@ resource "aws_security_group" "k8s_sg" {
     cidr_blocks = [ "0.0.0.0/0" ]
     protocol = "tcp"
   }
+  ingress  { #grafana dashboard access
+    from_port = 3000
+    to_port = 3000
+    cidr_blocks = ["0.0.0.0/0"]
+    protocol = "tcp"
+  }
+  ingress  { #promtheus ui access
+    from_port = 9090
+    to_port = 9090
+    cidr_blocks = ["0.0.0.0/0"] #for better security, replace it with laptop ip address
+    protocol = "tcp"
+  }
 # Allow all internal traffic between cluster nodes
   # Taaki Master aur Workers aapas mein bina rukawat baat kar sakein
   ingress {
@@ -89,9 +101,10 @@ resource "aws_instance" "worker_node" {   #worker node - the muscles - where the
   }
 }
 
-#ssh -i ~/.ssh/id_rsa ubuntu@51.20.98.96
+#ssh -i ~/.ssh/id_rsa ubuntu@51.20.141.66
 
-#control_node_ip = "13.53.149.194"
+#control_node_ip = "16.16.121.201"
 #worker_node_ip = [
- # "13.63.155.239",
-  #"51.20.98.96",
+#  "51.20.141.66",
+ # "13.48.70.197",
+

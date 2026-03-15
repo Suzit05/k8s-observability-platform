@@ -7,8 +7,7 @@
 4. ./master-setup.sh
 
 5.after running the master-setup.sh , the output bottom should look like this:
-Join command saved in join-command.sh
-kubeadm join 172.31.3.69:6443 --token 91rtjl.jbptgtbe1fbin9oo --discovery-token-ca-cert-hash sha256:8e1c40f308ced259ae124269049bfc75308ca24d6f222c6fedaa7dd089350b5a
+kubeadm join <ip-address> --token <random> --discovery-token-ca-cert-hash sha256:<random>
 Master setup completed!
 .
 .
@@ -17,15 +16,13 @@ Master setup completed!
 
 6. paste this command into workers node (ip- after ssh)---------
 
-sudo kubeadm join 172.31.3.69:6443 \
---token 91rtjl.jbptgtbe1fbin9oo \
---discovery-token-ca-cert-hash sha256:8e1c40f308ced259ae124269049bfc75308ca24d6f222c6fedaa7dd089350b5a
+sudo kubeadm join <ip-address> \
+--token <random> \
+--discovery-token-ca-cert-hash ssha256:<random>
 
 7.kubectl get nodes --------------in master node to verify
 
-8. kubectl get pods -n kube-system ---check system pods (master node)
-
-9. kubectl get nodes -o wide
+---------------------------------------------------------------------
 
 You created a Kubernetes cluster using kubeadm.
 .
@@ -35,3 +32,26 @@ You created a Kubernetes cluster using kubeadm.
              │
       ┌──────┴──────┐
    Worker 1      Worker 2
+---------------------------------------------------------------------------
+
+8. nano install-monitoring.sh
+
+9. paste from the install-monitoring.sh
+
+10.sudo chmod +x install-monitoring.sh
+ ./install-monitoring.sh
+
+
+
+
+   #phase 4 
+   AWS EC2
+   │
+Kubernetes Cluster
+   │
+┌───────────────┬───────────────┐
+Applications   Monitoring
+   │              │
+  Nginx       Prometheus
+                 │
+               Grafana
