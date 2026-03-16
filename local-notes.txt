@@ -351,6 +351,8 @@ or delete Docker containers.
 
 Then you repeat:
 
+
+tips - use port-forward for any svc to run the port
 ```
 Phase 3
 Phase 4
