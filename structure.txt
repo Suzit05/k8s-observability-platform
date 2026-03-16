@@ -1,3 +1,5 @@
+apps architecutre------------------------------------
+
 k8s-observability-platform
 │
 ├── terraform
@@ -15,3 +17,26 @@ k8s-observability-platform
 ├── scripts
 │
 └── docs
+--------------------------------------------------------
+2. Devops logging pipeline
+
+Application / Containers
+        │
+        │ logs
+        ▼
+Promtail (log agent)
+        │
+        ▼
+Grafana Loki (log storage)
+        │
+        ▼
+Grafana Dashboard (visualization) ✅ Short summary
+
+#Promtail → logs collect karta hai
+#Loki → logs store karta hai
+#Grafana → logs visualize karta hai
+
+#after installing plg, 
+# Start the tunnel (keep this terminal running)
+kubectl port-forward svc/loki 3100:3100 -n monitoring
+

@@ -1,46 +1,360 @@
-Step 1 — Start Your Terminal
+----------------------------------------------------
 
-Open VS Code terminal or any shell.
+### ❓ If you shut down your PC, do you need to repeat Phase 5?
 
-Go to your project folder.
+No ❌ — **you do NOT need to reinstall anything**.
 
-Step 2 — Verify Cluster Is Running
+Your **Kind cluster persists** unless you run:
+
+```bash
+kind delete cluster
+```
+
+So after restarting your PC you only need to:
+
+1. Start Docker
+2. Verify the cluster
+3. Run port-forward
+--------------------------------------------------------------
+
+# 📘 Local Cluster + Observability Stack Runbook
+
+## Phase 3 & Phase 4 — Running the Cluster and Monitoring Stack
+
+### Step 1 — Open Terminal
+
+Open **VS Code terminal** or any shell.
+
+Go to project directory:
+
+```bash
+cd k8s-observability-platform
+```
+
+---
+
+### Step 2 — Ensure Docker Is Running
+
+Your **Kind cluster runs inside Docker**.
+
+Check:
+
+```bash
+docker ps
+```
+
+If Docker is stopped, start Docker Desktop.
+
+---
+
+### Step 3 — Verify Cluster Is Running
 
 Run:
 
+```bash
 kubectl get nodes
+```
 
-If you see your nodes like:
+Expected output:
 
+```
 observability-cluster-control-plane
 observability-cluster-worker
 observability-cluster-worker2
+```
 
-your cluster is still running.
+If nodes appear → cluster is running.
 
-Step 3 — Check Monitoring Pods
-kubectl get pods -n monitoring
+---
 
-You should see pods like:
-
-monitoring-grafana
-prometheus-monitoring-kube-prometheus
-alertmanager-monitoring-kube-prometheus
-Step 4 — Start Port Forward Again
+### Step 4 — Check Monitoring Pods
 
 Run:
 
+```bash
+kubectl get pods -n monitoring
+```
+
+Expected pods include:
+
+```
+monitoring-grafana
+prometheus-monitoring-kube-prometheus
+alertmanager-monitoring-kube-prometheus
+kube-state-metrics
+prometheus-node-exporter
+```
+
+If these are **Running**, monitoring stack is active.
+
+---
+
+### Step 5 — Start Grafana Port Forward
+
+Run:
+
+```bash
 kubectl port-forward svc/monitoring-grafana 3000:80 -n monitoring
+```
 
-Keep this terminal open.
+⚠️ Keep this terminal **open**.
 
-Step 5 — Open Grafana
+---
+
+### Step 6 — Open Grafana
 
 Open browser:
 
+```
 http://localhost:3000
+```
 
-Login with:
+Login:
 
-username: admin
-password: (same password as before) - # SYSHxr2vLmZVnZl2nlmqAejF8Qw9HykINrDShYpi
+```
+Username: admin
+Password: SYSHxr2vLmZVnZl2nlmqAejF8Qw9HykINrDShYpi
+```
+
+You now have access to **cluster metrics dashboards**.
+
+---
+
+# Phase 5 — Logging Stack Setup
+
+## Step 1 — Create Logging Folder
+
+Inside project:
+
+```bash
+mkdir logging
+```
+
+Project structure:
+
+```
+k8s-observability-platform
+│
+├── kubernetes
+├── helm
+├── monitoring
+└── logging
+```
+
+---
+
+## Step 2 — Add Helm Repository
+
+Install charts using **Helm**
+
+```bash
+helm repo add grafana https://grafana.github.io/helm-charts
+helm repo update
+```
+
+---
+
+## Step 3 — Install Loki Logging Stack
+
+Run:
+
+```bash
+helm install loki grafana/loki-stack -n monitoring
+```
+
+This installs:
+
+```
+Loki
+Promtail
+Grafana integration
+```
+
+---
+
+## Step 4 — Verify Loki and Promtail
+
+Check pods:
+
+```bash
+kubectl get pods -n monitoring
+```
+
+Expected:
+
+```
+loki-0
+loki-promtail-xxxxx
+loki-promtail-yyyyy
+```
+
+---
+
+Check DaemonSet:
+
+```bash
+kubectl get daemonset -n monitoring
+```
+
+Expected:
+
+```
+loki-promtail
+```
+
+---
+
+Check Promtail pods:
+
+```bash
+kubectl get pods -n monitoring | grep promtail
+```
+
+kubectl port-forward svc/loki 3100:3100 -n monitoring
+---
+
+## Step 5 — Add Loki Data Source in Grafana
+
+Open Grafana.
+
+Navigate:
+
+```
+Connections
+↓
+Data Sources
+↓
+Add Data Source
+```
+
+Select:
+
+```
+Loki
+```
+
+Set URL:
+
+```
+http://loki:3100
+```
+
+Click:
+
+```
+Save & Test
+```
+
+---
+
+## Step 6 — View Logs
+
+Open:
+
+```
+Explore
+```
+
+Select:
+
+```
+Loki
+```
+
+Run query:
+
+```
+{namespace="default"}
+```
+
+You should now see **application logs**.
+
+---
+
+## Step 7 — Generate Logs
+
+Generate traffic:
+
+```bash
+while true; do curl localhost:30007; done
+```
+
+Logs will appear in Grafana.
+
+Example query:
+
+```
+{app="nginx-test"}
+```
+
+---
+
+# Final Observability Architecture
+
+```
+Application Pods
+       │
+       ▼
+Promtail (log collector)
+       │
+       ▼
+Loki (log storage)
+       │
+       ▼
+Grafana (log visualization)
+```
+
+Metrics flow:
+
+```
+Prometheus → Grafana
+```
+
+Logs flow:
+
+```
+Promtail → Loki → Grafana
+```
+
+---
+
+# 🧠 What Happens After PC Restart
+
+You only need to run:
+
+```
+1. Start Docker
+2. kubectl get nodes
+3. kubectl get pods -n monitoring
+4. kubectl port-forward svc/monitoring-grafana 3000:80 -n monitoring
+```
+
+Then open:
+
+```
+http://localhost:3000
+```
+
+Everything will still be installed.
+
+---
+
+# ❗ When You MUST Reinstall Everything
+
+Only if you run:
+
+```bash
+kind delete cluster
+```
+
+or delete Docker containers.
+
+Then you repeat:
+
+```
+Phase 3
+Phase 4
+Phase 5
+```
+
+-----
